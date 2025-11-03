@@ -14,7 +14,7 @@
 
 ---
 
-This repository is the official home for the Verian Standard specification. It contains the technical documentation, core concepts, and protocols for implementing Verifiable AI.
+This repository is the official home for the Verian Standard specification. It contains the technical documentation, tiers of verification, and protocols for implementing Verifiable AI.
 
 ## The Problem: The Crisis of Trust in AI
 
@@ -24,18 +24,18 @@ Generative AI holds immense promise, but its utility is critically undermined by
 
 **Verian** is an open standard and verification protocol designed to ground generative AI in objective reality. Instead of treating an AI's output as an opaque, probabilistic black box, Verian provides a framework for making AI claims **transparent, auditable, and deterministically verifiable** against source documents.
 
-## The Three Concepts of Verification
+## The Three Tiers of Verification
 
-The Verian Standard is built on a foundation of three core concepts, which are applied in sequence to any AI-generated claim.
+The Verian Standard is built on a foundation of three tiers, which are applied in sequence to any AI-generated claim.
 
 ### 1. Does it exist? (Existence Verification)
 This is the first and most fundamental check, designed to combat blatant hallucinations. The protocol uses deterministic tools (like literal text search) to answer a simple question: can the source for this claim be found in the provided content? This provides **Verifiable Certainty**.
 
 ### 2. Is the prediction in good faith? (Contextual Integrity)
-A claim can be factually present but contextually wrong. This concept combats subtle hallucinations by analyzing the context of the verified information. For example, if a medical record from 10 years ago states a patient is "age 40," a good faith presentation would be "age 50," not "age 40." This ensures **Principled Context**.
+A claim can be factually present but contextually wrong. This tier combats subtle hallucinations by analyzing the context of the verified information. For example, if a medical record from 10 years ago states a patient is "age 40," a good faith presentation would be "age 50," not "age 40." This ensures **Principled Context**.
 
 ### 3. Can the prediction be interpreted in bad faith? (Adversarial Resilience)
-This final check addresses ambiguity that could be exploited through error or malice. For example, a date like "12/01/00" can be interpreted differently in the US vs. Europe. The protocol flags these ambiguities, which are then resolved and noted for user transparency. This provides an additional layer of **Principled Context** and robustness.
+This final check addresses ambiguity that could be exploited through error or malice. For example, a date like "12/01/00" can be interpreted differently in the US vs. Europe. The protocol flags these ambiguities, which are then resolved and noted for user transparency. This provides an additional layer of **Principled Context** and robustness by using commonly understood truth finding algorithms.
 
 ## How It Works: Visualizing Trust
 
@@ -57,6 +57,46 @@ Progressive disclosure on hover or click reveals the details of any corrections 
 
 The power of Verian lies in its strict architectural separation between the **probabilistic act of generation** and the **deterministic act of verification**. The LLM's output is never blindly trusted; it is merely a proposal that must be rigorously validated by an independent, deterministic process.
 
+```mermaid
+graph TD
+    %% Define Node Styles
+    style LabelNode fill:none,stroke:none,color:#000,font-weight:bold
+
+    subgraph "Phase 1: Ground Truth Creation (Deterministic)"
+        A["Source Document<br/>(PDF, Image, Video)"]
+        B{"Deterministic Ingestion Tools<br/>(OCR, PDF-to-Text, FFMPEG)"}
+        C["<b>Ground Truth</b><br/>(Structured, Verifiable Text)"]
+        A --> B --> C
+    end
+
+    subgraph "Phase 2: Claim Generation (Probabilistic & Untrusted)"
+        D["LLM Engine"]
+        E["Untrusted Claim with <code>&lt;cite&gt;</code> tag<br/><i>'The invoice is $0.00'</i>"]
+    end
+
+    subgraph "Phase 3: Verification & Reconciliation (Deterministic & Trusted)"
+        F{"<b>Verian Verification Protocol (VVP)</b><br/>The Reconciliation Engine"}
+        G["<b>Verified & Corrected Output</b><br/><b>'The invoice is $450.00<span style='color:#005595;'>[3]</span>'</b>"]
+    end
+
+    subgraph "Phase 4: Final Presentation"
+        H(("End User"))
+    end
+
+    %% Define Mediator Nodes for Labels
+    Label_Input["Input for Generation"]:::LabelNode
+    Label_Ref["Reference for Truth"]:::LabelNode
+    Label_Claim["Claim to be Verified"]:::LabelNode
+
+    %% Define Connections using Mediator Nodes
+    C --> Label_Input --> D
+    D --> E
+    
+    C --> Label_Ref --> F
+    E --> Label_Claim --> F
+    
+    F --> G --> H
+```
 
 **Phase 1: Ground Truth Creation (Deterministic)**
 The process begins with trusted, deterministic tools. Any source document (PDF, image, etc.) is converted into a structured, searchable text format. This output is the immutable **Ground Truth**, the single source of fact for the entire system.
@@ -65,7 +105,7 @@ The process begins with trusted, deterministic tools. Any source document (PDF, 
 The Ground Truth is fed to the LLM. The LLM's only job is to perform a creative task: generate a human-readable summary and embed the raw `<cite>` tags pointing to what it *believes* is the source. Its output is always treated as an **untrusted claim**.
 
 **Phase 3: Verification & Reconciliation (Deterministic & Trusted)**
-This is the heart of the standard. The **Verian Verification Protocol (VVP)** acts as an independent reconciliation engine. It receives two critical inputs: the **untrusted claim** from the LLM and the original **Ground Truth** from Phase 1. The VVP deterministically compares the two, applies the Three Concepts of Verification, corrects any errors or contextual inaccuracies, and resolves ambiguities.
+This is the heart of the standard. The **Verian Verification Protocol (VVP)** acts as an independent reconciliation engine. It receives two critical inputs: the **untrusted claim** from the LLM and the original **Ground Truth** from Phase 1. The VVP deterministically compares the two, applies the Three Tiers of Verification, corrects any errors or contextual inaccuracies, and resolves ambiguities.
 
 **Phase 4: Final Presentation**
 The text shown to the end user is **always the output of the trusted VVP**, never the raw output from the LLM. The VVP renders the final, corrected statement with the appropriately styled citation marker, ensuring the user only ever interacts with verified information.
@@ -80,7 +120,7 @@ This "chain of verification" architecture also provides inherent resilience agai
 
 This repository and the Verian Standard are in a **pre-alpha, foundational stage.**
 
-*   ✅ The core concepts and technical approach have been defined.
+*   ✅ The three tiers and technical approach have been defined.
 *   📝 The formal specification is in an early draft stage.
 *   ⚖️ The governance and intellectual property framework has been established (see below).
 *   🌱 This GitHub repository is the designated public home for the standard's future development.
